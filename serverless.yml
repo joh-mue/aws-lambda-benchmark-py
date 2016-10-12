@@ -25,11 +25,15 @@ provider:
 #  region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+iamRoleStatements:
+   - Effect: "Allow"
+     Action:
+       - "s3:*"
+     Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+   - Effect: "Allow"
+     Action:
+       - "dynamodb:*"
+     Resource: { "Fn::Join" : ["", ["arn:aws:dynamodb:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -50,6 +54,8 @@ provider:
 functions:
   benchmark:
     handler: handler.runBenchmark
+    memorySize: 512
+    timeout: 3
 
 #   you can add any of the following events
 #    events:
