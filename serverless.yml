@@ -29,11 +29,11 @@ iamRoleStatements:
    - Effect: "Allow"
      Action:
        - "s3:*"
-     Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-   - Effect: "Allow"
-     Action:
-       - "dynamodb:*"
-     Resource: { "Fn::Join" : ["", ["arn:aws:dynamodb:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+     Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "python-benchmark-bucket" } ] ]  }
+   # - Effect: "Allow"
+   #   Action:
+   #     - "dynamodb:*"
+   #   Resource: { "Fn::Join" : ["", ["arn:aws:dynamodb:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -53,8 +53,8 @@ iamRoleStatements:
 
 functions:
   benchmark:
-    handler: handler.runBenchmark
-    memorySize: 512
+    handler: handler.run_benchmark
+    memorySize: 1024
     timeout: 3
 
 #   you can add any of the following events
