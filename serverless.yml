@@ -30,10 +30,10 @@ iamRoleStatements:
      Action:
        - "s3:*"
      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "python-benchmark-bucket" } ] ]  }
-   # - Effect: "Allow"
-   #   Action:
-   #     - "dynamodb:*"
-   #   Resource: { "Fn::Join" : ["", ["arn:aws:dynamodb:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+   - Effect: "Allow"
+     Action:
+       - "dynamodb:*"
+     Resource: { "Fn::Join" : ["", ["arn:aws:dynamodb:eu-central-1:146904559692:", { "Ref" : "python-benchmark-table" } ] ]  }
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:PutObject"
@@ -67,12 +67,12 @@ functions:
 #      - sns: greeter-topic
 
 # you can add CloudFormation resource templates here
-#resources:
+# resources:
 #  Resources:
 #    NewResource:
-#      Type: AWS::S3::Bucket
+#      Type: AWS::dynamodb::Table
 #      Properties:
-#        BucketName: my-new-bucket
+#        TableName: python-benchmark-table
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"

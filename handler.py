@@ -9,11 +9,11 @@ logger.setLevel(logging.INFO)
 def run_benchmark(event, context):
     print("Running Benchmark.")
     start = context.get_remaining_time_in_millis()
-    response = {"test": "v0.1.1 - loading from s3 session", "event": event}
+    response = {"test": "v0.2 - loading from dynamodb session", "event": event}
     
-    
+    response["ddb_response"] = load_code_from_ddb(event["tableName"], event["payloadName"], context)
     # response["s3_client_times"] = load_code_from_s3_client(event["bucketName"], event["payloadName"])
-    response["s3_resource_times"] = load_code_from_s3_resource(event["bucketName"], event["payloadName"], context)
+    # response["s3_resource_times"] = load_code_from_s3_resource(event["bucketName"], event["payloadName"], context)
 
     return response
 
@@ -29,6 +29,8 @@ def load_code_from_s3_resource(bucketName, payloadName, context):
     result = {}
     
     result["timeToConnect"] = context.get_remaining_time_in_millis()
+    # -> lambda cannot contain assignment!
+    # result["timeToConnect"] = timed_exec(lambda x: s3 = boto3.resource('s3'), "nothing")
     s3 = boto3.resource('s3')
     result["timeToConnect"] -= context.get_remaining_time_in_millis()
     
@@ -52,14 +54,32 @@ def load_code_from_s3_resource(bucketName, payloadName, context):
 
     return result
 
-def timed_exec(function, *args)
+def load_code_from_ddb(tableName, payloadName, context):
+    print("Retrieving payload from dynamoDB")
+    result = {}
+    result["timeToConnectToTable"] = context.get_remaining_time_in_millis()
+    dynamodb = boto3.resource('dynamodb').Table(tableName)
+    result["timeToConnectToTable"] -= context.get_remaining_time_in_millis()
+    
+    result["timeToScanTable"] = context.get_remaining_time_in_millis()
+    dbResponse = dynamodb.scan()
+    result["timeToScanTable"] -= context.get_remaining_time_in_millis()
+
+    result["timeToGetDBItem"] = context.get_remaining_time_in_millis()
+    dbResponse = dynamodb.get_item(Key={'name':'payload1'})
+    result["timeToGetDBItem"] -= context.get_remaining_time_in_millis()
+
+    result["ddbResponse"] = dbResponse['Item']
+    return result
+
+def timed_exec(function, *args):
     remaining = context.get_remaining_time_in_millis()
     function(*args)
     return difference - context.get_remaining_time_in_millis()
 
 ### INVOKE ###
 def invoke_payload(payload):
-    print("Inoking payload.")
+    print("Invoking payload...")
     subprocess.call(['python',payload])
 
 ### UPLOADs ###

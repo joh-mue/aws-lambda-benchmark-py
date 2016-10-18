@@ -1,4 +1,5 @@
 {
+  "tableName": "python-benchmark-table",
   "bucketName": "python-benchmark-bucket",
   "payloadName": "payload.py",
   "key1": "value1"
