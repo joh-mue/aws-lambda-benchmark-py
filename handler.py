@@ -9,11 +9,15 @@ logger.setLevel(logging.INFO)
 def run_benchmark(event, context):
     print("Running Benchmark.")
     start = context.get_remaining_time_in_millis()
-    response = {"test": "v0.2 - loading from dynamodb session", "event": event}
+    response = {"test": "v0.2.1 - loading from dynamodb and s3", "event": event}
     
-    response["ddb_response"] = load_code_from_ddb(event["tableName"], event["payloadName"], context)
-    # response["s3_client_times"] = load_code_from_s3_client(event["bucketName"], event["payloadName"])
-    # response["s3_resource_times"] = load_code_from_s3_resource(event["bucketName"], event["payloadName"], context)
+    response["ddb_times_1"] = load_code_from_ddb(event["tableName"], event["payloadName"], context)
+    response["ddb_times_2"] = load_code_from_ddb(event["tableName"], event["payloadName"], context)
+    response["ddb_times_3"] = load_code_from_ddb(event["tableName"], event["payloadName"], context)
+
+    response["s3_resource_times_1"] = load_code_from_s3_resource(event["bucketName"], event["payloadName"], context)
+    response["s3_resource_times_2"] = load_code_from_s3_resource(event["bucketName"], event["payloadName"], context)
+    response["s3_resource_times_3"] = load_code_from_s3_resource(event["bucketName"], event["payloadName"], context)
 
     return response
 
@@ -66,10 +70,10 @@ def load_code_from_ddb(tableName, payloadName, context):
     result["timeToScanTable"] -= context.get_remaining_time_in_millis()
 
     result["timeToGetDBItem"] = context.get_remaining_time_in_millis()
-    dbResponse = dynamodb.get_item(Key={'name':'payload1'})
+    dbResponse = dynamodb.get_item(Key={'name':payloadName})
     result["timeToGetDBItem"] -= context.get_remaining_time_in_millis()
 
-    result["ddbResponse"] = dbResponse['Item']
+    result["__ddbResponse"] = dbResponse['Item']
     return result
 
 def timed_exec(function, *args):
